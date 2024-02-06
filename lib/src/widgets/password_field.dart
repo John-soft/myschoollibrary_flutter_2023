@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 import '../style/colors.dart';
 
-class CustomTextField extends StatefulWidget {
-  const CustomTextField({
+class PasswordTextField extends StatefulWidget {
+  const PasswordTextField({
     super.key,
     required this.title,
     required this.controller,
@@ -24,10 +24,11 @@ class CustomTextField extends StatefulWidget {
   final int? maxLines;
 
   @override
-  State<CustomTextField> createState() => _CustomTextFieldState();
+  State<PasswordTextField> createState() => _PasswordTextFieldState();
 }
 
-class _CustomTextFieldState extends State<CustomTextField> {
+class _PasswordTextFieldState extends State<PasswordTextField> {
+  bool _isPasswordVisible = false;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -48,12 +49,25 @@ class _CustomTextFieldState extends State<CustomTextField> {
               controller: widget.controller,
               cursorColor: AppColors.blackColor,
               keyboardType: widget.inputType,
+              obscureText: !_isPasswordVisible,
+              obscuringCharacter: '*',
               decoration: InputDecoration(
-                  fillColor: AppColors.whiteColor,
-                  hintText: widget.hintText,
-                  filled: true,
-                  border: const OutlineInputBorder(),
-                  focusedBorder: const OutlineInputBorder()),
+                fillColor: AppColors.whiteColor,
+                hintText: widget.hintText,
+                filled: true,
+                border: const OutlineInputBorder(),
+                focusedBorder: const OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _isPasswordVisible = !_isPasswordVisible;
+                    });
+                  },
+                  icon: Icon(_isPasswordVisible
+                      ? Icons.visibility
+                      : Icons.visibility_off),
+                ),
+              ),
             ),
           ),
         ),

@@ -20,7 +20,7 @@ class ButtonIconWidget extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        height: 35,
+        height: 50,
         width: double.infinity,
         // margin: const EdgeInsets.symmetric(
         //   horizontal: 20,
@@ -67,7 +67,7 @@ class ButtonWidget extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        height: 35,
+        height: 50,
         width: double.infinity,
         // margin: const EdgeInsets.symmetric(
         //   horizontal: 20,

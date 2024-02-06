@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:myschoollibrary_flutter_2023/src/pages/auth/register/create_account.dart';
+import 'package:myschoollibrary_flutter_2023/src/pages/home_page.dart';
+import 'package:myschoollibrary_flutter_2023/src/widgets/password_field.dart';
 
 import '../../../style/colors.dart';
 import '../../../widgets/button_widget.dart';
@@ -12,8 +15,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,6 +27,9 @@ class _LoginPageState extends State<LoginPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(
+              height: 30,
+            ),
             Text(
               'Welcome Back!',
               style: Theme.of(context).primaryTextTheme.bodyMedium!.copyWith(
@@ -32,39 +38,71 @@ class _LoginPageState extends State<LoginPage> {
                     fontWeight: FontWeight.bold,
                   ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
             Column(
               children: [
-                CustomTextField(title: 'Email', controller: emailController),
-                const SizedBox(height: 15),
                 CustomTextField(
-                    title: 'Password', controller: passwordController),
+                  title: 'Email',
+                  controller: _emailController,
+                  hintText: "Email",
+                ),
+                const SizedBox(height: 15),
+                PasswordTextField(
+                  title: 'Password',
+                  controller: _passwordController,
+                  hintText: "Password",
+                ),
                 const SizedBox(height: 25),
                 ButtonWidget(
-                    title: 'Continue',
+                    title: 'Login',
                     buttonColor: AppColors.buttonColor,
                     textColor: AppColors.whiteColor,
-                    onTap: () {})
+                    onTap: () {
+                      final email = _emailController.text.toString();
+                      final password = _passwordController.text.toString();
+                      if (email.isEmpty || password.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Email and Password is required'),
+                          ),
+                        );
+                      } else {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const HomePage()));
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Successfully logged in'),
+                          ),
+                        );
+                      }
+                    })
               ],
             ),
-            const SizedBox(height: 40),
-            lineDivider(),
-            const SizedBox(height: 40),
-            ButtonIconWidget(
-              title: 'Sign in with Facebook',
-              buttonColor: AppColors.whiteColor,
-              textColor: AppColors.blackColor,
-              onTap: () {},
-              icon: 'assets/images/Facebook.png',
-            ),
-            const SizedBox(height: 15),
-            ButtonIconWidget(
-              title: 'Sign in with Google',
-              buttonColor: AppColors.whiteColor,
-              textColor: AppColors.blackColor,
-              onTap: () {},
-              icon: 'assets/images/Google.png',
-            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'Don\'t have an acccount?',
+                  style: TextStyle(color: AppColors.whiteColor),
+                ),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const CreateAnCcountPage()));
+                  },
+                  child: const Text(
+                    ' Register',
+                    style: TextStyle(color: AppColors.buttonColor),
+                  ),
+                ),
+              ],
+            )
           ],
         ),
       ),

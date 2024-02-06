@@ -1,9 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:myschoollibrary_flutter_2023/src/categories/categories.dart';
-import 'package:myschoollibrary_flutter_2023/src/style/colors.dart';
-import 'package:myschoollibrary_flutter_2023/src/widgets/button_widget.dart';
-import 'package:myschoollibrary_flutter_2023/src/widgets/text_field.dart';
+import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:myschoollibrary_flutter_2023/src/style/colors.dart';
+import 'package:myschoollibrary_flutter_2023/src/widgets/password_field.dart';
+import 'package:myschoollibrary_flutter_2023/src/widgets/text_field.dart';
+import 'package:http/http.dart' as http;
+import '../../../widgets/button_widget.dart';
 import '../login/login_page.dart';
 
 class CreateAnCcountPage extends StatefulWidget {
@@ -14,12 +16,47 @@ class CreateAnCcountPage extends StatefulWidget {
 }
 
 class _CreateAnCcountPageState extends State<CreateAnCcountPage> {
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController dobController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _matNoController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
       TextEditingController();
+  bool _isLoading = false;
+
+  Future<void> _register() async {
+    setState(() {
+      _isLoading = true;
+    });
+    const String apiUrl = 'http://10.0.2.2:4000/api/v1/users/register';
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        body: jsonEncode({
+          'fullName': _nameController.text,
+          'email': _emailController.text,
+          'matNo': _matNoController.text,
+          'password': _passwordController.text,
+          'confirmPassword': _confirmPasswordController.text,
+        }),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 201 || response.statusCode == 201) {
+        print(response.body);
+      } else {
+        // Registration failed
+        print('Registration failed');
+      }
+
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,34 +83,80 @@ class _CreateAnCcountPageState extends State<CreateAnCcountPage> {
               Column(
                 children: [
                   CustomTextField(
-                      title: 'Full Name', controller: nameController),
-                  const SizedBox(height: 15),
-                  CustomTextField(title: 'Email', controller: emailController),
-                  const SizedBox(height: 15),
-                  CustomTextField(
-                      title: 'Date of Birth', controller: dobController),
+                    title: 'Name',
+                    controller: _nameController,
+                    hintText: "Name",
+                  ),
                   const SizedBox(height: 15),
                   CustomTextField(
-                      title: 'Password', controller: passwordController),
+                    title: 'Email',
+                    controller: _emailController,
+                    hintText: "Email",
+                  ),
                   const SizedBox(height: 15),
                   CustomTextField(
-                      title: 'Confirm Password',
-                      controller: confirmPasswordController),
-                  const SizedBox(height: 20),
+                    title: 'MatNo',
+                    controller: _matNoController,
+                    hintText: "Matric Number",
+                  ),
+                  const SizedBox(height: 15),
+                  PasswordTextField(
+                    title: 'Password',
+                    controller: _passwordController,
+                    hintText: "Password",
+                  ),
+                  const SizedBox(height: 15),
+                  PasswordTextField(
+                    title: 'Confirm Password',
+                    controller: _confirmPasswordController,
+                    hintText: "Confirm Password",
+                  ),
+                  const SizedBox(height: 25),
                   ButtonWidget(
                       title: 'Continue',
                       buttonColor: AppColors.buttonColor,
                       textColor: AppColors.whiteColor,
                       onTap: () {
-                        Navigator.pushAndRemoveUntil(
+                        final name = _nameController.text.toString();
+                        final email = _emailController.text.toString();
+                        final matNo = _matNoController.text.toString();
+                        final password = _passwordController.text.toString();
+                        final confirmPassword =
+                            _confirmPasswordController.text.toString();
+                        if (name.isEmpty ||
+                            email.isEmpty ||
+                            matNo.isEmpty ||
+                            password.isEmpty ||
+                            confirmPassword.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Fields cannot be empty'),
+                            ),
+                          );
+                        } else {
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const CategoriesPage()),
-                            (route) => false);
+                              builder: (context) => const LoginPage(),
+                            ),
+                          );
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Account created successfully'),
+                            ),
+                          );
+                        }
                       })
+                  // ElevatedButton(
+                  //   onPressed: _isLoading ? null : _register,
+                  //   child: _isLoading
+                  //       ? const CircularProgressIndicator()
+                  //       : const Text('Register'),
+                  // ),
                 ],
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 15),
               Row(
                 children: [
                   Expanded(
@@ -119,7 +202,7 @@ class _CreateAnCcountPageState extends State<CreateAnCcountPage> {
                               builder: (context) => const LoginPage()));
                     },
                     child: const Text(
-                      ' Sign in ',
+                      ' Login ',
                       style: TextStyle(color: AppColors.buttonColor),
                     ),
                   ),
